@@ -7,9 +7,9 @@ describe("HttpClient", () => {
       .toThrow("API key is required");
   });
 
-  it("throws if baseUrl is missing", () => {
-    expect(() => new HttpClient({ apiKey: "fa_live_test", baseUrl: "" }))
-      .toThrow("baseUrl is required");
+  it("uses default baseUrl when not provided", () => {
+    const client = new HttpClient({ apiKey: "fa_live_test" });
+    expect((client as any).baseUrl).toBe("https://fileagent.dev/api");
   });
 
   it("strips trailing slash from baseUrl", () => {
