@@ -7,18 +7,30 @@ describe("HttpClient", () => {
       .toThrow("API key is required");
   });
 
-  it("uses default baseUrl when not provided", () => {
+  it("uses default baseUrl when not provided", async () => {
+    const mockFetch = vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve({}) });
+    vi.stubGlobal("fetch", mockFetch);
+
     const client = new HttpClient({ apiKey: "fa_live_test" });
-    expect((client as any).baseUrl).toBe("https://fileagent.dev/api");
+    await client.post("/v1/convert", "body");
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      "https://fileagent.dev/api/v1/convert",
+      expect.anything(),
+    );
   });
 
-  it("strips trailing slash from baseUrl", () => {
-    const client = new HttpClient({
-      apiKey: "fa_live_test",
-      baseUrl: "https://example.com/",
-    });
-    // Access private field via any to verify
-    expect((client as any).baseUrl).toBe("https://example.com");
+  it("strips trailing slash from baseUrl", async () => {
+    const mockFetch = vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve({}) });
+    vi.stubGlobal("fetch", mockFetch);
+
+    const client = new HttpClient({ apiKey: "fa_live_test", baseUrl: "https://example.com/" });
+    await client.post("/test", "body");
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      "https://example.com/test",
+      expect.anything(),
+    );
   });
 
   describe("post", () => {
